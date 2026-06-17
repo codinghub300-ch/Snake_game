@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta charset="UTF-8">
+
+<title>Snake Game</title>
+
+<style>
+
+body{
+    margin:0;
+    background:#0d1117;
+    color:white;
+    font-family:Arial;
+    text-align:center;
+}
+
+h1{
+    margin-top:15px;
+}
+
+#menu{
+    margin-top:20px;
+}
+
+button{
+    padding:12px 25px;
+    margin:10px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    font-size:18px;
+}
+
+#gameCanvas{
+    display:none;
+    margin:auto;
+    border:3px solid #00ffff;
+    box-shadow:0 0 25px #00ffff;
+}
+
+#info{
+    display:none;
+    font-size:22px;
+    margin:15px;
+}
+
+#gameover{
+    display:none;
+    margin-top:20px;
+    font-size:28px;
+    color:red;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>🐍 Neon Snake Game</h1>
+
+<div id="menu">
+
+<h2>Select Difficulty</h2>
+
+<button onclick="startGame(150)">
+Easy
+</button>
+
+<button onclick="startGame(100)">
+Normal
+</button>
+
+<button onclick="startGame(70)">
+Hard
+</button>
+
+</div>
+
+<div id="info">
+
+Score:
+<span id="score">0</span>
+
+|
+
+High Score:
+<span id="highscore">0</span>
+
+</div>
+
+<canvas
+id="gameCanvas"
+width="600"
+height="600">
+</canvas>
+
+<div id="gameover"></div>
+
+<script>
+
+const canvas =
+document.getElementById("gameCanvas");
+
+const ctx =
+canvas.getContext("2d");
+
+const box = 20;
+
+let snake = [];
+let food = {};
+
+let direction = "RIGHT";
+
+let score = 0;
+
+let highScore = 0;
+
+let gameLoop;
+
+let speed = 100;
+
+snake = [
+{
+x: 10*box,
+y: 10*box
+}
+];
+
+function randomFood(){
+
+food = {
+
+x: Math.floor(
+Math.random()*30
+)*box,
+
+y: Math.floor(
+Math.random()*30
+)*box
+
+};
+
+}
+
+randomFood();
+
+function startGame(selectedSpeed){
+
+speed = selectedSpeed;
+
+document.getElementById(
+"menu"
+).style.display="none";
+
+document.getElementById(
+"gameCanvas"
+).style.display="block";
+
+document.getElementById(
+"info"
+).style.display="block";
+
+document.getElementById(
+"gameover"
+).style.display="none";
+
+score = 0;
+
+snake = [
+{
+x:10*box,
+y:10*box
+}
+];
+
+direction="RIGHT";
+
+randomFood();
+
+clearInterval(gameLoop);
+
+gameLoop =
+setInterval(
+draw,
+speed
+);
+
+}
