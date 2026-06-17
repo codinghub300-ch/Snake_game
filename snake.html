@@ -189,3 +189,308 @@ speed
 );
 
 }
+
+// =====================
+// Keyboard Controls
+// =====================
+
+document.addEventListener(
+"keydown",
+changeDirection
+);
+
+function changeDirection(event){
+
+const key = event.keyCode;
+
+if(key == 37 && direction != "RIGHT"){
+    direction = "LEFT";
+}
+
+else if(key == 38 && direction != "DOWN"){
+    direction = "UP";
+}
+
+else if(key == 39 && direction != "LEFT"){
+    direction = "RIGHT";
+}
+
+else if(key == 40 && direction != "UP"){
+    direction = "DOWN";
+}
+
+}
+
+// =====================
+// Draw Game
+// =====================
+
+function draw(){
+
+ctx.fillStyle="#0d1117";
+ctx.fillRect(
+0,
+0,
+canvas.width,
+canvas.height
+);
+
+// Food
+
+ctx.shadowBlur = 20;
+ctx.shadowColor = "red";
+
+ctx.fillStyle = "red";
+
+ctx.fillRect(
+food.x,
+food.y,
+box,
+box
+);
+
+// Snake
+
+for(let i=0;i<snake.length;i++){
+
+ctx.shadowBlur = 15;
+
+ctx.shadowColor =
+i==0 ? "#00ffff" : "#39ff14";
+
+ctx.fillStyle =
+i==0 ? "#00ffff" : "#39ff14";
+
+ctx.fillRect(
+snake[i].x,
+snake[i].y,
+box,
+box
+);
+
+}
+
+let snakeX = snake[0].x;
+let snakeY = snake[0].y;
+
+if(direction=="LEFT"){
+snakeX -= box;
+}
+
+if(direction=="RIGHT"){
+snakeX += box;
+}
+
+if(direction=="UP"){
+snakeY -= box;
+}
+
+if(direction=="DOWN"){
+snakeY += box;
+}
+
+// =====================
+// Eating Food
+// =====================
+
+if(
+snakeX == food.x &&
+snakeY == food.y
+){
+
+score += 10;
+
+document.getElementById(
+"score"
+).innerHTML = score;
+
+if(score > highScore){
+
+highScore = score;
+
+document.getElementById(
+"highscore"
+).innerHTML = highScore;
+
+}
+
+playEatSound();
+
+randomFood();
+
+}else{
+
+snake.pop();
+
+}
+
+let newHead = {
+
+x: snakeX,
+y: snakeY
+
+};
+
+
+// =====================
+// Collision Detection
+// =====================
+
+if(
+
+snakeX < 0 ||
+
+snakeX >= canvas.width ||
+
+snakeY < 0 ||
+
+snakeY >= canvas.height ||
+
+collision(
+newHead,
+snake
+)
+
+){
+
+gameOver();
+return;
+
+}
+
+snake.unshift(
+newHead
+);
+
+}
+
+// =====================
+// Self Collision
+// =====================
+
+function collision(
+head,
+array
+){
+
+for(
+let i=0;
+i<array.length;
+i++
+){
+
+if(
+head.x == array[i].x &&
+head.y == array[i].y
+){
+
+return true;
+
+}
+
+}
+
+return false;
+
+}
+
+// =====================
+// Sounds
+// =====================
+
+const eatSound =
+new Audio("eating.mp3");
+
+const crashSound =
+new Audio("crash.mp3");
+
+const bgMusic =
+new Audio("background.mp3");
+
+bgMusic.loop = true;
+
+function playEatSound(){
+
+eatSound.currentTime = 0;
+eatSound.play();
+
+}
+
+function startMusic(){
+
+bgMusic.volume = 0.4;
+bgMusic.play();
+
+}
+
+// =====================
+// Game Over
+// =====================
+
+function gameOver(){
+
+clearInterval(
+gameLoop
+);
+
+crashSound.play();
+
+document.getElementById(
+"gameover"
+).style.display="block";
+
+document.getElementById(
+"gameover"
+).innerHTML =
+
+`
+💀 GAME OVER
+
+<br><br>
+
+Final Score:
+${score}
+
+<br><br>
+
+<button onclick="restartGame()">
+🔄 Play Again
+</button>
+`;
+
+}
+
+// =====================
+// Restart
+// =====================
+
+function restartGame(){
+
+document.getElementById(
+"gameover"
+).style.display="none";
+
+startGame(speed);
+
+}
+
+// =====================
+// Auto Music Start
+// =====================
+
+document.addEventListener(
+"click",
+function(){
+
+startMusic();
+
+},
+{
+once:true
+}
+);
+
+</script>
+
+</body>
+</html>
