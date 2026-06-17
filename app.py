@@ -7,10 +7,14 @@ st.set_page_config(
     layout="wide"
 )
 
-st.title("🐍 Snake Game")
+st.title("🐍 Neon Snake Game")
 st.write("Built by Coding Hub")
 
 with open("snake.html", "r", encoding="utf-8") as f:
     html = f.read()
 
-components.html(html, height=750)
+components.html(
+    html,
+    height=800,
+    scrolling=False
+)
