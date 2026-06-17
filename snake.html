@@ -1,10 +1,10 @@
+```html
 <!DOCTYPE html>
 <html>
+
 <head>
-
 <meta charset="UTF-8">
-
-<title>Snake Game</title>
+<title>Neon Snake Game</title>
 
 <style>
 
@@ -44,13 +44,6 @@ button{
     display:none;
     font-size:22px;
     margin:15px;
-}
-
-#gameover{
-    display:none;
-    margin-top:20px;
-    font-size:28px;
-    color:red;
 }
 
 </style>
@@ -97,8 +90,6 @@ width="600"
 height="600">
 </canvas>
 
-<div id="gameover"></div>
-
 <script>
 
 const canvas =
@@ -109,35 +100,95 @@ canvas.getContext("2d");
 
 const box = 20;
 
+const colors = [
+"#00ffff",
+"#39ff14",
+"#ffff00",
+"#ff00ff",
+"#ff8800",
+"#00ff99",
+"#ffffff"
+];
+
 let snake = [];
 let food = {};
 
 let direction = "RIGHT";
 
 let score = 0;
-
 let highScore = 0;
 
 let gameLoop;
-
 let speed = 100;
 
 snake = [
 {
-x: 10*box,
-y: 10*box
+x:10*box,
+y:10*box,
+color:"#00ffff"
 }
 ];
+
+const eatSound =
+new Audio("eating.mp3");
+
+const crashSound =
+new Audio("crash.mp3");
+
+const bgMusic =
+new Audio("background.mp3");
+
+bgMusic.loop = true;
+
+function playEatSound(){
+
+eatSound.pause();
+eatSound.currentTime = 0;
+
+eatSound.play().catch(()=>{});
+
+}
+
+function playCrashSound(){
+
+crashSound.pause();
+crashSound.currentTime = 0;
+
+crashSound.play().catch(()=>{});
+
+}
+
+function startMusic(){
+
+bgMusic.volume = 0.3;
+
+bgMusic.play().catch(()=>{});
+
+}
+
+document.addEventListener(
+"click",
+function(){
+
+startMusic();
+
+},
+{
+once:true
+}
+);
 
 function randomFood(){
 
 food = {
 
-x: Math.floor(
+x:
+Math.floor(
 Math.random()*30
 )*box,
 
-y: Math.floor(
+y:
+Math.floor(
 Math.random()*30
 )*box
 
@@ -163,20 +214,21 @@ document.getElementById(
 "info"
 ).style.display="block";
 
-document.getElementById(
-"gameover"
-).style.display="none";
-
 score = 0;
+
+document.getElementById(
+"score"
+).innerHTML = score;
 
 snake = [
 {
 x:10*box,
-y:10*box
+y:10*box,
+color:"#00ffff"
 }
 ];
 
-direction="RIGHT";
+direction = "RIGHT";
 
 randomFood();
 
@@ -190,10 +242,6 @@ speed
 
 }
 
-// =====================
-// Keyboard Controls
-// =====================
-
 document.addEventListener(
 "keydown",
 changeDirection
@@ -203,31 +251,28 @@ function changeDirection(event){
 
 const key = event.keyCode;
 
-if(key == 37 && direction != "RIGHT"){
-    direction = "LEFT";
+if(key==37 && direction!="RIGHT"){
+direction="LEFT";
 }
 
-else if(key == 38 && direction != "DOWN"){
-    direction = "UP";
+else if(key==38 && direction!="DOWN"){
+direction="UP";
 }
 
-else if(key == 39 && direction != "LEFT"){
-    direction = "RIGHT";
+else if(key==39 && direction!="LEFT"){
+direction="RIGHT";
 }
 
-else if(key == 40 && direction != "UP"){
-    direction = "DOWN";
+else if(key==40 && direction!="UP"){
+direction="DOWN";
 }
 
 }
-
-// =====================
-// Draw Game
-// =====================
 
 function draw(){
 
 ctx.fillStyle="#0d1117";
+
 ctx.fillRect(
 0,
 0,
@@ -235,12 +280,10 @@ canvas.width,
 canvas.height
 );
 
-// Food
+ctx.shadowBlur=20;
+ctx.shadowColor="red";
 
-ctx.shadowBlur = 20;
-ctx.shadowColor = "red";
-
-ctx.fillStyle = "red";
+ctx.fillStyle="red";
 
 ctx.fillRect(
 food.x,
@@ -249,17 +292,15 @@ box,
 box
 );
 
-// Snake
-
 for(let i=0;i<snake.length;i++){
 
-ctx.shadowBlur = 15;
+ctx.shadowBlur=15;
 
-ctx.shadowColor =
-i==0 ? "#00ffff" : "#39ff14";
+ctx.shadowColor=
+snake[i].color;
 
-ctx.fillStyle =
-i==0 ? "#00ffff" : "#39ff14";
+ctx.fillStyle=
+snake[i].color;
 
 ctx.fillRect(
 snake[i].x,
@@ -270,8 +311,11 @@ box
 
 }
 
-let snakeX = snake[0].x;
-let snakeY = snake[0].y;
+let snakeX =
+snake[0].x;
+
+let snakeY =
+snake[0].y;
 
 if(direction=="LEFT"){
 snakeX -= box;
@@ -288,10 +332,6 @@ snakeY -= box;
 if(direction=="DOWN"){
 snakeY += box;
 }
-
-// =====================
-// Eating Food
-// =====================
 
 if(
 snakeX == food.x &&
@@ -310,11 +350,31 @@ highScore = score;
 
 document.getElementById(
 "highscore"
-).innerHTML = highScore;
+).innerHTML =
+highScore;
 
 }
 
 playEatSound();
+
+const lastSegment =
+snake[
+snake.length-1
+];
+
+snake.push({
+
+x:lastSegment.x,
+y:lastSegment.y,
+
+color:
+colors[
+Math.floor(
+Math.random()*colors.length
+)
+]
+
+});
 
 randomFood();
 
@@ -326,15 +386,11 @@ snake.pop();
 
 let newHead = {
 
-x: snakeX,
-y: snakeY
+x:snakeX,
+y:snakeY,
+color:"#00ffff"
 
 };
-
-
-// =====================
-// Collision Detection
-// =====================
 
 if(
 
@@ -364,10 +420,6 @@ newHead
 
 }
 
-// =====================
-// Self Collision
-// =====================
-
 function collision(
 head,
 array
@@ -380,8 +432,8 @@ i++
 ){
 
 if(
-head.x == array[i].x &&
-head.y == array[i].y
+head.x==array[i].x &&
+head.y==array[i].y
 ){
 
 return true;
@@ -394,103 +446,46 @@ return false;
 
 }
 
-// =====================
-// Sounds
-// =====================
-
-const eatSound =
-new Audio("eating.mp3");
-
-const crashSound =
-new Audio("crash.mp3");
-
-const bgMusic =
-new Audio("background.mp3");
-
-bgMusic.loop = true;
-
-function playEatSound(){
-
-eatSound.currentTime = 0;
-eatSound.play();
-
-}
-
-function startMusic(){
-
-bgMusic.volume = 0.4;
-bgMusic.play();
-
-}
-
-// =====================
-// Game Over
-// =====================
-
 function gameOver(){
 
 clearInterval(
 gameLoop
 );
 
-crashSound.play();
+playCrashSound();
 
-document.getElementById(
-"gameover"
-).style.display="block";
+setTimeout(() => {
 
-document.getElementById(
-"gameover"
-).innerHTML =
-
-`
-💀 GAME OVER
-
-<br><br>
-
-Final Score:
-${score}
-
-<br><br>
-
-<button onclick="restartGame()">
-🔄 Play Again
-</button>
-`;
-
-}
-
-// =====================
-// Restart
-// =====================
-
-function restartGame(){
-
-document.getElementById(
-"gameover"
-).style.display="none";
-
-startGame(speed);
-
-}
-
-// =====================
-// Auto Music Start
-// =====================
-
-document.addEventListener(
-"click",
-function(){
-
-startMusic();
-
-},
+snake = [
 {
-once:true
+x:10*box,
+y:10*box,
+color:"#00ffff"
 }
+];
+
+direction="RIGHT";
+
+score=0;
+
+document.getElementById(
+"score"
+).innerHTML = score;
+
+randomFood();
+
+gameLoop =
+setInterval(
+draw,
+speed
 );
+
+},1500);
+
+}
 
 </script>
 
 </body>
 </html>
+```
